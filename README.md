@@ -12,7 +12,7 @@ Install on both computers, enable pairing, and confirm the matching code. Clipbo
 
 ## Automatic updates
 
-Starting with 0.3.1, ClipSync checks for updates after startup and periodically in the background, downloads new versions automatically, and verifies their cryptographic signature. Choose **Restart & update** in Settings when ready. You do not need to download future EXE/DMG files yourself. Install this update-enabled version manually once if upgrading from 0.3.0 or older.
+Starting with 0.3.2, ClipSync checks for updates after startup and periodically in the background, downloads new versions automatically, and verifies their cryptographic signature. Choose **Restart & update** in Settings when ready. You do not need to download future EXE/DMG files yourself. Install this update-enabled version manually once if upgrading from 0.3.0 or older.
 
 These personal builds are not signed with commercial Windows or Apple Developer certificates. The Mac app is ad-hoc signed, but not notarized; macOS may require an explicit first-launch exception. Updating does not change this OS trust requirement.
 
