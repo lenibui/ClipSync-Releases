@@ -1,0 +1,32 @@
+name: Publish signed ClipSync release
+on:
+  push:
+    branches: ['delivery/v*']
+permissions:
+  contents: write
+concurrency:
+  group: clipsync-public-releases
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Validate delivery
+        run: node scripts/validate-delivery.mjs
+      - name: Publish complete release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DELIVERY_BRANCH: ${{ github.ref_name }}
+        run: |
+          tag="${DELIVERY_BRANCH#delivery/}"
+          current="$(gh release view --json tagName --jq .tagName 2>/dev/null || true)"
+          CURRENT_TAG="$current" NEXT_TAG="$tag" node -e 'const n=process.env.NEXT_TAG.slice(1).split(".").map(Number),c=process.env.CURRENT_TAG.slice(1).split(".").map(Number);if(c.length===3){const i=n.findIndex((v,i)=>v!==c[i]);if(i<0||n[i]<c[i])throw Error("Refusing to replace or downgrade a public release");}'
+          gh release create "$tag" incoming/ClipSync-Setup.exe incoming/ClipSync.dmg incoming/ClipSync_*.exe incoming/ClipSync_*.exe.sig incoming/ClipSync_*.app.tar.gz incoming/ClipSync_*.app.tar.gz.sig incoming/latest.json incoming/SHA256SUMS.txt --target main --draft --title "ClipSync $tag" --notes-file incoming/RELEASE_NOTES.md
+          gh release edit "$tag" --draft=false --latest
+          gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$DELIVERY_BRANCH"
